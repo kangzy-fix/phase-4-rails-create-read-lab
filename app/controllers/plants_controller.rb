@@ -1,34 +1,30 @@
 class PlantsController < ApplicationController
-  def create
-    plant = Plant.create(plant_params)
-    render json: plant
-  end
 
-  def destroy
-    plant = Plant.find(params[:id])
-    plant.destroy
-    render json: plant
-  end
-
+  # GET /plants
   def index
     plants = Plant.all
     render json: plants
   end
 
+  # GET /plants/:id
   def show
-    plant = Plant.find(params[:id])
+    plant = Plant.find_by(id: params[:id])
     render json: plant
   end
 
-  def update
-    plant = Plant.find(params[:id])
-    plant.update(plant_params)
-    render json: plant
+  # POST /plants
+  def create
+    plant = Plant.new(plant_params)
+    if plant.save
+      render json: plant, status: :created, location: plant
+    else
+      render json: plant.errors, status: :unprocessable_entity
+    end
   end
 
   private
 
   def plant_params
-    params.require(:plant).permit(:name, :image, :description, :price)
+    params.permit(:name, :image, :price)
   end
 end
